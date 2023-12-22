@@ -118,6 +118,8 @@ function createIllustration([inputsData, outputsData]: TxIo, isMainnet?: boolean
       .join('path');
   }
 
+  const dyeAddress = d3.scaleOrdinal(d3.schemeAccent);
+
   const inputNodes = drawNodes(inputs).attr('transform', (d) => `translate(-${d.y},${d.x})`);
   drawCircles(inputNodes);
   drawText(inputNodes);
@@ -142,7 +144,20 @@ function createIllustration([inputsData, outputsData]: TxIo, isMainnet?: boolean
               .toNumber(),
           );
         }
-        return 5;
+        const total = (data.children || []).reduce((sum, item) => sum.add(item.capacity), BI.from(0));
+        return Math.log10(
+          BI.from(total)
+            .div(10 ** 8)
+            .toNumber(),
+        );
+      })
+      .on('mouseover', function () {
+        const fill = d3.select(this).attr('fill');
+        d3.select(this).attr('fill', d3.color(fill)!.brighter().hex());
+      })
+      .on('mouseout', function () {
+        const fill = d3.select(this).attr('fill');
+        d3.select(this).attr('fill', d3.color(fill)!.darker().hex());
       });
   }
 
@@ -151,11 +166,20 @@ function createIllustration([inputsData, outputsData]: TxIo, isMainnet?: boolean
 
     selection
       .append('text')
+      .attr('fill', ({ data }) => {
+        if (data.kind === 'cell') return dyeAddress(data.lock.args);
+        return '';
+      })
+      .attr('stroke-width', 0.5)
+      .attr('stroke', ({ data }) => {
+        if (data.kind === 'cell') return d3.color(dyeAddress(data.lock.args))!.darker().hex();
+        return '';
+      })
       .text(({ data }) => {
         if (data.kind === 'tx') return truncateMiddle(data.txHash, 6, 4);
         return truncateMiddle(helpers.encodeToAddress(data.lock, lumosConfig));
       })
-      .attr('transform', `translate(0,6)`);
+      .attr('transform', `translate(5,6)`);
   }
 
   return svg.node()!;
