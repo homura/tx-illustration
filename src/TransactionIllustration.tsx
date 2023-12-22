@@ -85,7 +85,7 @@ function createIllustration([inputsData, outputsData]: TxIo, isMainnet?: boolean
 
   const svg = d3
     .create('svg')
-    .attr('viewBox', [-dy - dx, x0 - dx, width, height])
+    .attr('viewBox', [-dy - dx - 100, x0 - dx, width, height])
     .attr('style', 'max-width: 100%; height: auto;');
 
   // inputs links
@@ -122,7 +122,9 @@ function createIllustration([inputsData, outputsData]: TxIo, isMainnet?: boolean
 
   const inputNodes = drawNodes(inputs).attr('transform', (d) => `translate(-${d.y},${d.x})`);
   drawCircles(inputNodes);
-  drawText(inputNodes);
+  drawText(inputNodes)
+    .attr('text-anchor', (d) => (d.data.kind === 'cell' ? 'end' : 'start'))
+    .attr('transform', (d) => (d.data.kind === 'cell' ? 'translate(-5,6)' : 'translate(5,6)'));
 
   const outputNodes = drawNodes(outputs).attr('transform', (d) => `translate(${d.y},${d.x})`);
   drawCircles(outputNodes);
@@ -133,7 +135,7 @@ function createIllustration([inputsData, outputsData]: TxIo, isMainnet?: boolean
   }
 
   function drawCircles(selection: d3.Selection<SVGGElement | null, HierarchyPoint, SVGGElement, undefined>) {
-    selection
+    return selection
       .append('circle')
       .attr('fill', (d) => (d.children ? '#555' : '#999'))
       .attr('r', ({ data }) => {
@@ -164,7 +166,7 @@ function createIllustration([inputsData, outputsData]: TxIo, isMainnet?: boolean
   function drawText(selection: d3.Selection<SVGGElement | null, HierarchyPoint, SVGGElement, undefined>) {
     const lumosConfig = { config: { PREFIX: isMainnet ? 'ckb' : 'ckt', SCRIPTS: {} } } as const;
 
-    selection
+    return selection
       .append('text')
       .attr('fill', ({ data }) => {
         if (data.kind === 'cell') return dyeAddress(data.lock.args);
