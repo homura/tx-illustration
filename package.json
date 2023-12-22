@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ckb-lumos/lumos": "0.0.0-canary-9461dd6-20231220080242",
+    "@ckb-lumos/lumos": "0.0.0-canary-7cdb0d4-20231222054338",
     "@types/d3": "^7.4.3",
     "@types/node": "^20.10.5",
     "d3": "^7.8.5",
