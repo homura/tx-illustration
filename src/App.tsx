@@ -24,7 +24,7 @@ function App() {
         <br />
 
         <label htmlFor="isMainnet">Mainnet</label>
-        <input id="isMainnet" type="checkbox" />
+        <input id="isMainnet" type="checkbox" defaultChecked={isMainnet} />
 
         <br />
 
